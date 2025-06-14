@@ -7,30 +7,24 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { UserFormsModule } from './user-forms/user-forms.module';
-import { CompaniesModule } from './companies/companies.module';
-import { OnboardingFieldsModule } from './onboarding-fields/onboarding-fields.module';
-import { OnboardingDataModule } from './onboarding-data/onboarding-data.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT) || 5432,
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_DATABASE || 'onboardify',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.NODE_ENV !== 'production',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT || '5432'),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     AuthModule,
     UserModule,
     WhatsappModule,
-    UserFormsModule,
-    CompaniesModule,
-    OnboardingFieldsModule,
-    OnboardingDataModule,
+    UserFormsModule
   ],
   controllers: [AppController],
   providers: [AppService],
