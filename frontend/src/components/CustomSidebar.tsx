@@ -1,5 +1,5 @@
 import { Sidebar, SidebarGroupContent, SidebarGroup, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from './ui/sidebar'
-import { Home, MessageCircle } from 'lucide-react'
+import { Home, MessageCircle, Plus } from 'lucide-react'
 import LoginButton from './LoginButton'
 
 const items = [
@@ -12,6 +12,11 @@ const items = [
     title: "Bulk Message",
     url: "/bulk-message",
     icon: MessageCircle,
+  },
+  {
+    title: "Create Form",
+    url: "/create-form",
+    icon: Plus,
   }
 ]
 
