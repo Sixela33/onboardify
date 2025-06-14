@@ -1,6 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FormEntity } from "./form.entity";
 
+export enum FormItemType {
+    TEXT = 'text',
+    NUMBER = 'number',
+    DATE = 'date',
+    BOOLEAN = 'boolean',
+    FILE = 'file',
+}
+
 @Entity()
 export class FormItem {
     @PrimaryGeneratedColumn()
@@ -12,8 +20,8 @@ export class FormItem {
     @Column()
     question: string;
 
-    @Column('simple-array', { nullable: true })
-    options: string[];
+    @Column({ type: 'enum', enum: FormItemType, nullable: true })
+    type: FormItemType;
 
     @ManyToOne(() => FormEntity, form => form.items)
     form: FormEntity;

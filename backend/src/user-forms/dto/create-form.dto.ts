@@ -1,12 +1,16 @@
-import { IsString, IsArray, ValidateNested, IsNumber } from 'class-validator';
+import { IsString, IsArray, ValidateNested, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { FormItemType } from '../entities/form-item.entity';
 
 export class CreateFormItemDto {
     @IsString()
     name: string;
 
     @IsString()
-    description: string;
+    question: string;
+
+    @IsEnum(FormItemType)
+    type: FormItemType;
 
     @IsNumber()
     step: number;
