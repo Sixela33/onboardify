@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { UserFormsModule } from './user-forms/user-forms.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { WhatsappModule } from './whatsapp/whatsapp.module';
     AuthModule,
     UserModule,
     WhatsappModule,
+    UserFormsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
