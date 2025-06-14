@@ -26,6 +26,10 @@ export class WhatsappService {
 
   async onModuleInit() {
     await this.restoreActiveSessions();
+
+    if(!process.env.N8N_WORKFLOW_URL) {
+      throw new Error('N8N_WORKFLOW_URL is not set');
+    }
   }
 
 
@@ -210,7 +214,9 @@ export class WhatsappService {
         type: messageType,
       }
 
-      const response = await axios.post("http://localhost:5678/webhook/Whatsapp", objet_to_send);
+      console.log("objet_to_send", );
+
+      const response = await axios.post(process.env.N8N_WORKFLOW_URL || '', objet_to_send);
       session.socket?.sendMessage(msg.key.remoteJid, { text: response.data });
 
     } catch (error) {
