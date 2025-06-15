@@ -16,6 +16,6 @@ export class FormStatus {
     @Column()
     actualStep: number;
 
-    @OneToMany(() => FormResponse, response => response.formStatus)
+    @OneToMany(() => FormResponse, response => response.formId)
     responses: FormResponse[];
 }

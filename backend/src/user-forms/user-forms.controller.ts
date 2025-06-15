@@ -2,7 +2,7 @@ import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { UserFormsService } from './user-forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { FormEntity } from './entities/form.entity';
-import { FormResponse } from './entities/form-response';
+import { SaveResponseDto } from './dto/save-response.dto';
 
 @Controller('user-forms')
 export class UserFormsController {
@@ -29,7 +29,12 @@ export class UserFormsController {
   }
 
   @Post('respond/:phoneNumber/:formId/:step')
-  async saveResponse(@Param('phoneNumber') phoneNumber: string, @Param('formId') formId: string, @Param('step') step: string, @Body() response: FormResponse) {
+  async saveResponse(
+    @Param('phoneNumber') phoneNumber: string, 
+    @Param('formId') formId: string, 
+    @Param('step') step: string, 
+    @Body() response: SaveResponseDto
+  ) {
     return this.userFormsService.saveResponse(phoneNumber, formId, step, response);
   }
 

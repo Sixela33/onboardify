@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FormStatus } from "./form-status.entity";
 
 @Entity()
@@ -9,13 +9,11 @@ export class FormResponse {
     @Column()
     formId: number;
 
-    @ManyToOne(() => FormStatus, formStatus => formStatus.responses)
-    formStatus: FormStatus;
-
     @Column()
     response: string;
 
-    @Column()
+    @CreateDateColumn()
     createdAt: Date;
     
 }
+

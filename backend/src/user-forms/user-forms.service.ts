@@ -6,6 +6,7 @@ import { FormItem } from './entities/form-item.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { FormStatus } from './entities/form-status.entity';
 import { FormResponse } from './entities/form-response';
+import { SaveResponseDto } from './dto/save-response.dto';
 
 @Injectable()
 export class UserFormsService {
@@ -111,7 +112,7 @@ export class UserFormsService {
         return nextQuestion;
     }
 
-    async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem | null> {
+    async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem & { formId: number, step: number } | null> {
         const formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber },
             relations: ['form', 'form.items'],
@@ -127,6 +128,7 @@ export class UserFormsService {
 
         if (formStatus.actualStep === 0) {
             formStatus.actualStep = 1;
+            await this.formStatusRepository.save(formStatus);
         }
 
         const actualQuestion = formStatus.form.items.find(item => item.step === formStatus.actualStep );
@@ -135,10 +137,14 @@ export class UserFormsService {
             return null;
         }
 
-        return actualQuestion;
+        return {
+            ...actualQuestion,
+            formId: formStatus.form.id,
+            step: formStatus.actualStep
+        };
     }
 
-    async saveResponse(phoneNumber: string, formId: string, step: string, response: FormResponse): Promise<boolean> {
+    async saveResponse(phoneNumber: string, formId: string, step: string, response: SaveResponseDto): Promise<boolean> {
         const formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber, form: { id: parseInt(formId) } },
             relations: ['form', 'form.items'],
@@ -153,12 +159,14 @@ export class UserFormsService {
         }
 
         const formResponse = this.formResponseRepository.create({
-            formStatus: formStatus,
             response: response.response,
             formId: parseInt(formId)
         });
 
         await this.formResponseRepository.save(formResponse);
+
+        formStatus.actualStep++;
+        await this.formStatusRepository.save(formStatus);
 
         return true;
     }
