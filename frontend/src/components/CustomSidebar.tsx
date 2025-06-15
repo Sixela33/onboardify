@@ -1,5 +1,5 @@
 import { Sidebar, SidebarGroupContent, SidebarGroup, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from './ui/sidebar'
-import { Home, FileText, MessageSquare, MessagesSquare, PlusCircle } from 'lucide-react'
+import { Home, FileText, MessageSquare, MessagesSquare, PlusCircle, ListChecks } from 'lucide-react'
 import LoginButton from './LoginButton'
 
 const items = [
@@ -27,6 +27,11 @@ const items = [
     title: "Forms",
     url: "/forms",
     icon: FileText,
+  },
+  {
+    title: "Form Status",
+    url: "/form-status",
+    icon: ListChecks,
   }
 ]
 
