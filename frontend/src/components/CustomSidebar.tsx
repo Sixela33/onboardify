@@ -4,7 +4,7 @@ import LoginButton from './LoginButton'
 
 const items = [
   {
-    title: "Home",
+    title: "Inicio",
     url: "/home",
     icon: Home,
   },
@@ -14,25 +14,20 @@ const items = [
     icon: MessageSquare,
   },
   {
-    title: "Bulk Message",
-    url: "/bulk-message",
-    icon: MessagesSquare,
-  },
-  {
-    title: "Create Form",
-    url: "/create-form",
-    icon: PlusCircle,
-  },
-  {
-    title: "Forms",
+    title: "Formularios",
     url: "/forms",
     icon: FileText,
   },
   {
-    title: "Form Status",
+    title: "Estado de Formularios",
     url: "/form-status",
     icon: ListChecks,
-  }
+  },
+  {
+    title: "WhatsApp",
+    url: "/whatsapp",
+    icon: MessageSquare,
+  },
 ]
 
 export default function CustomSidebar() {

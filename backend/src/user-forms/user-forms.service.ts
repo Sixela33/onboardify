@@ -133,7 +133,7 @@ export class UserFormsService {
 
         const formItems = formResponses.map((response, index) => {
             return ({
-                question: formStatus.form.items[index].question,
+                question: formStatus.form.items[index]?.question || '',
                 response: response.response,
             })
         });
