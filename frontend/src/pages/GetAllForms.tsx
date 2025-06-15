@@ -421,7 +421,7 @@ export default function Forms() {
             </Card>
           ) : (
             <>
-              <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-2xl font-semibold">Formularios Personalizados</h2>
                   <p className="text-muted-foreground">
@@ -432,14 +432,14 @@ export default function Forms() {
                   onClick={() => setIsCreating(true)}
                   className="transition-all hover:shadow-md"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-2" />
                   Crear Nuevo Formulario
-                </Button>
-              </div>
+        </Button>
+      </div>
 
-              <Card>
+      <Card>
                 <CardContent className="p-0">
-                  {forms.length === 0 ? (
+          {forms.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 space-y-4">
                       <div className="p-4 rounded-full bg-primary/10">
                         <FileText className="h-8 w-8 text-primary" />
@@ -450,67 +450,67 @@ export default function Forms() {
                           Comienza creando tu primer formulario personalizado
                         </p>
                       </div>
-                      <Button 
-                        variant="outline" 
+              <Button 
+                variant="outline" 
                         onClick={() => setIsCreating(true)}
                         className="transition-all hover:shadow-md"
-                      >
+              >
                         <Plus className="h-4 w-4 mr-2" />
                         Crear Formulario
-                      </Button>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
+              </Button>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
                           <TableHead>Nombre</TableHead>
                           <TableHead>Preguntas</TableHead>
                           <TableHead>Estado</TableHead>
                           <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                         {forms.map((form) => (
                           <TableRow key={form.id} className="group">
                             <TableCell className="font-medium group-hover:text-primary transition-colors">
                               {form.name}
                             </TableCell>
                             <TableCell>{form.items.length} preguntas</TableCell>
-                            <TableCell>
+                    <TableCell>
                               <Badge 
                                 variant={form.status.length > 0 ? "default" : "secondary"}
                                 className="transition-all"
                               >
                                 {form.status.length > 0 ? 'Activo' : 'Inactivo'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => navigate(`/forms/${form.id}`)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => navigate(`/forms/${form.id}`)}
                                   className="transition-all hover:shadow-md"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="icon"
-                                  onClick={() => handleDelete(form.id)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(form.id)}
                                   className="transition-all hover:shadow-md opacity-0 group-hover:opacity-100"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
             </>
           )}
         </TabsContent>
