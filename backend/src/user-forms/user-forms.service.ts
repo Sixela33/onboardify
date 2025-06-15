@@ -112,25 +112,31 @@ export class UserFormsService {
         return nextQuestion;
     }
 
-    async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem & { formId: number, step: number } | null> {
+    async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem & { formId: number, step: number, new_form: boolean, formItems: any[] } | null> {
         let formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber },
-            relations: ['form', 'form.items'],
+            relations: ['form', 'form.items', 'form.items.responses'],
         });
+
+        let new_form = false
 
         if (!formStatus) {
             const form = await this.getOneForm();
             formStatus = await this.startForm(phoneNumber, form.id.toString());
+            new_form = true;
         }
 
-        console.log("formStatus",formStatus);
-        console.log("formStatus.actualStep",formStatus.actualStep);
-        console.log("formStatus.form.items",formStatus.form.items);
+        const formResponses = await this.formResponseRepository.find({
+            where: { form: { id: formStatus.form.id } },
+            relations: ['form'],
+        });
 
-        if (formStatus.actualStep === 0) {
-            formStatus.actualStep = 1;
-            await this.formStatusRepository.save(formStatus);
-        }
+        const formItems = formResponses.map((response, index) => {
+            return ({
+                question: formStatus.form.items[index].question,
+                response: response.response,
+            })
+        });
 
         const actualQuestion = formStatus.form.items.find(item => item.step === formStatus.actualStep );
 
@@ -141,7 +147,9 @@ export class UserFormsService {
         return {
             ...actualQuestion,
             formId: formStatus.form.id,
-            step: formStatus.actualStep
+            step: formStatus.actualStep,
+            new_form: new_form,
+            formItems: formItems
         };
     }
 

@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { FormStatus } from "./form-status.entity";
+import { FormItem } from "./form-item.entity";
 
 @Entity()
 export class FormResponse {
@@ -14,6 +14,9 @@ export class FormResponse {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @ManyToOne(() => FormItem, form => form.responses)
+    form: FormItem;
     
 }
 

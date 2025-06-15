@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { FormEntity } from "./form.entity";
+import { FormResponse } from "./form-response";
 
 export enum FormItemType {
     TEXT = 'text',
@@ -25,6 +26,10 @@ export class FormItem {
 
     @ManyToOne(() => FormEntity, form => form.items)
     form: FormEntity;
+
+    @OneToMany(() => FormResponse, response => response.form)
+    responses: FormResponse[];
+
 
     @Column()
     step: number;
