@@ -143,24 +143,25 @@ export class UserFormsService {
         if (!actualQuestion) {
             return null;
         }
-
-        return {
+        const item = {
             ...actualQuestion,
             formId: formStatus.form.id,
             step: formStatus.actualStep,
             new_form: new_form,
             formItems: formItems
-        };
+        }
+        return item;
     }
 
     async saveResponse(phoneNumber: string, formId: string, step: string, response: SaveResponseDto): Promise<boolean> {
-        const formStatus = await this.formStatusRepository.findOne({
+        let formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber, form: { id: parseInt(formId) } },
             relations: ['form', 'form.items'],
         });
 
         if(!formStatus) {
-            throw new Error('Form not found for this phone number');
+            const form = await this.getOneForm();
+            formStatus = await this.startForm(phoneNumber, form.id.toString());
         }
 
         if(formStatus.actualStep !== parseInt(step)) {

@@ -189,7 +189,16 @@ export class WhatsappService {
     
     this.logger.log(`New message received - Session: ${session.id}, From: ${msg.key.remoteJid}, Type: ${messageType}, Content: ${messageContent}`);
 
-    if (!messageContent || !msg.key.remoteJid) return
+    if (!msg.key.remoteJid) return;
+
+    // Check for PDF document
+    if (msg?.message?.documentMessage && msg?.message?.documentMessage?.mimetype === 'application/pdf') {
+      this.logger.log(`PDF document received from ${msg.key.remoteJid}`);
+      console.log("msg.message.documentMessage", msg.message.documentMessage);
+      return;
+    }
+
+    if (!messageContent) return;
 
     if (messageContent === '!add') {
       if(await this.whitelistService.isInWhitelist(msg.key.remoteJid, session.id)) {
@@ -207,14 +216,17 @@ export class WhatsappService {
       return;
     }
 
+    
+    
     try {
       const objet_to_send = {
         message: messageContent,
         from: msg.key.remoteJid,
         type: messageType,
+        isDocument: msg?.message?.documentMessage ? true : false,
       }
 
-      console.log("objet_to_send", );
+      console.log("objet_to_send", objet_to_send);
 
       const response = await axios.post(process.env.N8N_WORKFLOW_URL || '', objet_to_send);
       session.socket?.sendMessage(msg.key.remoteJid, { text: response.data });
