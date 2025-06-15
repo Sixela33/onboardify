@@ -4,6 +4,7 @@ import WhatsApp from './pages/WhatsApp'
 import BulkMessage from './pages/BulkMessage'
 import CreateForm from './pages/CreateForm'
 import GetAllForms from './pages/GetAllForms'
+import FormStatuese from './pages/FormStatuese'
 
 function App() {  
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/bulk-message" element={<BulkMessage />} />
         <Route path="/create-form" element={<CreateForm />} />
         <Route path="/forms" element={<GetAllForms />} />
+        <Route path="/form-status" element={<FormStatuese />} />
       </Routes>
   )
 }

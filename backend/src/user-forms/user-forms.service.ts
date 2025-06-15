@@ -74,9 +74,9 @@ export class UserFormsService {
             actualStep: 1,
         });
 
-        const savedFormStatus = await this.formStatusRepository.save(formStatus);
+        await this.formStatusRepository.save(formStatus);
 
-        return savedFormStatus;
+        return await this.getFormStatusByPhone(phoneNumber);
     }
 
     async getFormStatusByPhone(phoneNumber: string): Promise<FormStatus> {
@@ -113,13 +113,14 @@ export class UserFormsService {
     }
 
     async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem & { formId: number, step: number } | null> {
-        const formStatus = await this.formStatusRepository.findOne({
+        let formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber },
             relations: ['form', 'form.items'],
         });
 
         if (!formStatus) {
-            throw new Error('Form not found for this phone number');
+            const form = await this.getOneForm();
+            formStatus = await this.startForm(phoneNumber, form.id.toString());
         }
 
         console.log("formStatus",formStatus);
@@ -169,5 +170,11 @@ export class UserFormsService {
         await this.formStatusRepository.save(formStatus);
 
         return true;
+    }
+
+    async getAllFormStatuses(): Promise<FormStatus[]> {
+        return this.formStatusRepository.find({
+            relations: ['form', 'form.items', 'form.status'],
+        });
     }
 }

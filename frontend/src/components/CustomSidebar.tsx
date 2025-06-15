@@ -22,6 +22,11 @@ const items = [
     title: "Forms",
     url: "/forms",
     icon: List,
+  },
+  {
+    title: "Form Status",
+    url: "/form-status",
+    icon: List,
   }
 ]
 

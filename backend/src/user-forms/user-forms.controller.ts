@@ -18,6 +18,11 @@ export class UserFormsController {
     return this.userFormsService.getAllForms();
   }
 
+  @Get('form-status')
+  async getAllFormStatuses() {
+    return this.userFormsService.getAllFormStatuses();
+  }
+
   @Get('actual-question/:phoneNumber')
   async getActualQuestion(@Param('phoneNumber') phoneNumber: string) {
     return this.userFormsService.getActualQuestionByPhone(phoneNumber);
@@ -42,4 +47,6 @@ export class UserFormsController {
   async startForm(@Param('phoneNumber') phoneNumber: string, @Param('formId') formId: string) {
     return this.userFormsService.startForm(phoneNumber, formId);
   }
+
+ 
 }
