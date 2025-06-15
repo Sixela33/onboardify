@@ -49,15 +49,27 @@ interface FormItem {
   options?: string[];
 }
 
+// Add FormItemType enum to match backend
+enum FormItemType {
+  TEXT = 'text',
+  NUMBER = 'number',
+  SELECT = 'select',
+  EMAIL = 'email',
+  PHONE = 'phone',
+  DATE = 'date',
+  FILE = 'file',
+  BOOLEAN = 'boolean'
+}
+
 const questionTypes = [
-  { value: 'text', label: 'Texto', icon: FileText },
-  { value: 'number', label: 'Número', icon: AlertCircle },
-  { value: 'select', label: 'Selección', icon: CheckCircle },
-  { value: 'email', label: 'Email', icon: Shield },
-  { value: 'phone', label: 'Teléfono', icon: Users },
-  { value: 'date', label: 'Fecha', icon: FileText },
-  { value: 'file', label: 'Archivo', icon: FileText },
-  { value: 'boolean', label: 'Sí/No', icon: CheckCircle }
+  { value: FormItemType.TEXT, label: 'Texto', icon: FileText },
+  { value: FormItemType.NUMBER, label: 'Número', icon: AlertCircle },
+  { value: FormItemType.SELECT, label: 'Selección', icon: CheckCircle },
+  { value: FormItemType.EMAIL, label: 'Email', icon: Shield },
+  { value: FormItemType.PHONE, label: 'Teléfono', icon: Users },
+  { value: FormItemType.DATE, label: 'Fecha', icon: FileText },
+  { value: FormItemType.FILE, label: 'Archivo', icon: FileText },
+  { value: FormItemType.BOOLEAN, label: 'Sí/No', icon: CheckCircle }
 ]
 
 const templates = [
@@ -146,11 +158,10 @@ export default function Forms() {
       ...prev,
       items: [...prev.items, {
         id: prev.items.length + 1,
-        name: '',
+        name: `question_${prev.items.length + 1}`,
         question: '',
-        type: 'text',
-        step: prev.items.length + 1,
-        required: true
+        type: FormItemType.TEXT,
+        step: prev.items.length + 1
       }]
     }))
   }
@@ -166,12 +177,49 @@ export default function Forms() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate form
+    if (!newForm.name.trim()) {
+      alert('Por favor ingresa un nombre para el formulario')
+      return
+    }
+
+    if (newForm.items.length === 0) {
+      alert('Por favor agrega al menos una pregunta al formulario')
+      return
+    }
+
+    // Validate all questions
+    for (const item of newForm.items) {
+      if (!item.question.trim()) {
+        alert('Por favor completa todas las preguntas')
+        return
+      }
+    }
+
     try {
-      await axiosInstance.post('/user-forms', newForm)
+      // Transform data to match backend DTO
+      const formData = {
+        name: newForm.name,
+        items: newForm.items.map(item => ({
+          name: item.name,
+          question: item.question,
+          type: item.type,
+          step: item.step
+        }))
+      }
+
+      await axiosInstance.post('/user-forms', formData)
       setIsCreating(false)
-      fetchForms()
+      setNewForm({
+        name: '',
+        description: '',
+        items: []
+      })
+      await fetchForms()
     } catch (error) {
       console.error('Error creating form:', error)
+      alert('Error al crear el formulario. Por favor intenta nuevamente.')
     }
   }
 
