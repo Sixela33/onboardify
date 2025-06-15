@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { WhatsappService } from './services/whatsapp.service';
+import { WhatsappService } from './services/session.service';
 import { WhatsappController } from './whatsapp.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Whitelisted } from './entities/Whitelistes';

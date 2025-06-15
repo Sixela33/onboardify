@@ -13,7 +13,7 @@ import {
   UseGuards,
   Req
 } from '@nestjs/common';
-import { WhatsappService } from './services/whatsapp.service';
+import { WhatsappService } from './services/session.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
 
 
@@ -21,6 +21,11 @@ interface BulkMessageDto {
   csvData: string;
   message: string;
   delayBetweenMessages?: number;
+}
+
+interface SendMessageDto {
+  to: string;
+  message: string;
 }
 
 @Controller('whatsapp')
@@ -96,6 +101,28 @@ export class WhatsappController {
       success: true,
       message: 'Session disconnected successfully'
     };
+  }
+
+  @Post('session/send-message')
+  @HttpCode(HttpStatus.OK)
+  async sendMessage(
+    @Req() req: Request & { user: { id: string } },
+    @Body() sendMessageDto: SendMessageDto,
+  ) {
+    const sessionId = req.user.id;
+    const { to, message } = sendMessageDto;
+
+    if (!to || !message) {
+      throw new BadRequestException('Recipient "to" and "message" are required');
+    }
+
+    const success = await this.whatsappService.sendMessage(sessionId, to, message);
+
+    if (!success) {
+      throw new BadRequestException(`Failed to send message.`);
+    }
+
+    return { success: true, message: 'Message sent successfully.' };
   }
 
   @Post('session/bulk-message')

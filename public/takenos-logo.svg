@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <!-- Taco icon -->
+    <path d="M24 40c-8.837 0-16-7.163-16-16S15.163 8 24 8s16 7.163 16 16-7.163 16-16 16zm0-2c7.732 0 14-6.268 14-14s-6.268-14-14-14S10 16.268 10 24s6.268 14 14 14z" fill="white"/>
+    <path d="M18 20c0-3.314 2.686-6 6-6s6 2.686 6 6c0 3.314-2.686 6-6 6s-6-2.686-6-6z" fill="white"/>
+    <!-- Text "takenos" -->
+    <path d="M60 32V16h4v16h-4zm12 0V16h12v3h-8v4h7v3h-7v3h8v3H72zm24-13v13h-4V19h-5v-3h14v3h-5zm12 13V16h4v16h-4zm12 0V16h12v3h-8v4h7v3h-7v3h8v3h-12zm24-13v13h-4V19h-5v-3h14v3h-5zm12 13V16h4v16h-4z" fill="white"/>
+  </g>
+</svg> 

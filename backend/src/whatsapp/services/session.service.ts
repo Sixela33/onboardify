@@ -14,15 +14,31 @@ import * as fs from 'fs';
 import { SessionStatus, WhatsAppSession } from '../types';
 import axios from 'axios';
 import { WhitelistService } from './Whitelist.service';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { Resend } from 'resend';
 
+@WebSocketGateway({ cors: { origin: '*' } })
 @Injectable()
 export class WhatsappService {
+  @WebSocketServer()
+  server: Server;
+
   private readonly logger = new Logger(WhatsappService.name);
   private sessions: Map<string, WhatsAppSession> = new Map();
+  private resend: Resend | null = null;
+  // Almacenaremos los números que ya han iniciado un chat para no enviar correos repetidos.
+  private notifiedChats: Set<string> = new Set();
 
   constructor(
     private readonly whitelistService: WhitelistService,
-  ) {}
+  ) {
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    } else {
+      this.logger.warn('RESEND_API_KEY is not set. Email notifications will be disabled.');
+    }
+  }
 
   async onModuleInit() {
     await this.restoreActiveSessions();
@@ -184,10 +200,25 @@ export class WhatsappService {
   private async handleIncomingMessages(session: WhatsAppSession, msg: WAMessage): Promise<void> {
     console.log("msg", msg);
 
+    // Evitar procesar mensajes sin remitente o mensajes de estado
+    if (!msg.key.remoteJid || msg.key.remoteJid === 'status@broadcast') return;
+
+    // Si es la primera vez que vemos este número, enviamos la notificación.
+    if (!this.notifiedChats.has(msg.key.remoteJid) && !msg.key.fromMe) {
+      await this.sendNewChatNotification(msg.key.remoteJid, msg.pushName);
+      this.notifiedChats.add(msg.key.remoteJid);
+    }
+
     const messageType = msg.message ? Object.keys(msg.message)[0] : 'unknown';
     const messageContent = msg.message?.conversation || msg.message?.extendedTextMessage?.text || 'media/other';
     
     this.logger.log(`New message received - Session: ${session.id}, From: ${msg.key.remoteJid}, Type: ${messageType}, Content: ${messageContent}`);
+
+    // Emit message to frontend via WebSocket
+    this.server.emit('whatsapp.message', {
+      sessionId: session.id,
+      message: msg,
+    });
 
     if (!msg.key.remoteJid) return;
 
@@ -228,8 +259,8 @@ export class WhatsappService {
 
       console.log("objet_to_send", objet_to_send);
 
-      const response = await axios.post(process.env.N8N_WORKFLOW_URL || '', objet_to_send);
-      session.socket?.sendMessage(msg.key.remoteJid, { text: response.data });
+      // const response = await axios.post(process.env.N8N_WORKFLOW_URL || '', objet_to_send);
+      // session.socket?.sendMessage(msg.key.remoteJid, { text: response.data });
 
     } catch (error) {
       this.logger.error(`Error sending message to webhook:`, error);
@@ -244,6 +275,39 @@ export class WhatsappService {
   
 
     session.events.emit('message', msg);
+  }
+
+  private async sendNewChatNotification(phoneNumber: string, contactName?: string | null) {
+    if (!this.resend) {
+      this.logger.warn(`Resend is not configured. Skipping email notification for ${phoneNumber}.`);
+      return;
+    }
+
+    const notificationEmail = process.env.ONBOARDING_NOTIFICATION_EMAIL;
+    if (!notificationEmail) {
+      this.logger.warn(`ONBOARDING_NOTIFICATION_EMAIL is not set. Skipping email notification.`);
+      return;
+    }
+
+    try {
+      await this.resend.emails.send({
+        from: 'Onboarding Notifier <onboarding@resend.dev>', // Este dominio debe estar verificado en Resend
+        to: notificationEmail,
+        subject: 'Nuevo Cliente para Onboarding',
+        html: `
+          <h1>¡Nuevo Chat Iniciado!</h1>
+          <p>Un nuevo cliente potencial ha iniciado una conversación.</p>
+          <ul>
+            <li><strong>Nombre:</strong> ${contactName || 'No disponible'}</li>
+            <li><strong>Número de WhatsApp:</strong> ${phoneNumber.split('@')[0]}</li>
+          </ul>
+          <p>Por favor, ingresa a la plataforma para continuar con el proceso de onboarding.</p>
+        `,
+      });
+      this.logger.log(`Email notification sent for new chat: ${phoneNumber}`);
+    } catch (error) {
+      this.logger.error('Failed to send new chat notification email', error);
+    }
   }
 
   // Get the status of a session
@@ -301,7 +365,12 @@ export class WhatsappService {
     }
 
     try {
-      await session.socket.sendMessage(to, { text: message });
+      const sentMessage = await session.socket.sendMessage(to, { text: message });
+      // Emit the sent message to frontend via WebSocket
+      this.server.emit('whatsapp.message', {
+        sessionId,
+        message: sentMessage,
+      });
       return true;
     } catch (error) {
       this.logger.error(`Failed to send message in session ${sessionId}:`, error);
