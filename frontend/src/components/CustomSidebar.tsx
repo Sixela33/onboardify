@@ -1,27 +1,32 @@
 import { Sidebar, SidebarGroupContent, SidebarGroup, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from './ui/sidebar'
-import { Home, List, MessageCircle, Plus } from 'lucide-react'
+import { Home, FileText, MessageSquare, MessagesSquare, PlusCircle } from 'lucide-react'
 import LoginButton from './LoginButton'
 
 const items = [
   {
     title: "Home",
-    url: "/",
+    url: "/home",
     icon: Home,
+  },
+  {
+    title: "Chat",
+    url: "/chat",
+    icon: MessageSquare,
   },
   {
     title: "Bulk Message",
     url: "/bulk-message",
-    icon: MessageCircle,
+    icon: MessagesSquare,
   },
   {
     title: "Create Form",
     url: "/create-form",
-    icon: Plus,
+    icon: PlusCircle,
   },
   {
     title: "Forms",
     url: "/forms",
-    icon: List,
+    icon: FileText,
   }
 ]
 
@@ -30,7 +35,7 @@ export default function CustomSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarHeader>
-            Spammer
+            Onboardify
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -39,7 +44,7 @@ export default function CustomSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
-                      <item.icon />
+                      <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
