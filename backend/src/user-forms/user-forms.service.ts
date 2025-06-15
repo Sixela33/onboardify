@@ -48,11 +48,29 @@ export class UserFormsService {
         return formWithItems;
     }
 
+    async getAllForms(): Promise<FormEntity[]> {
+        return this.formRepository.find({
+            relations: ['items', 'status'],
+        });
+    }
+
+    async getOneForm(): Promise<FormEntity> {
+        const form = await this.formRepository.find({
+            relations: ['items'],
+        });
+
+        if (!form) {
+            throw new Error('Form not found');
+        }
+
+        return form[0];
+    }
+    
     async startForm(phoneNumber: string, formId: string): Promise<FormStatus> {
         const formStatus = this.formStatusRepository.create({
             phoneNumber,
             form: { id: parseInt(formId) },
-            actualStep: 0,
+            actualStep: 1,
         });
 
         const savedFormStatus = await this.formStatusRepository.save(formStatus);
@@ -61,13 +79,14 @@ export class UserFormsService {
     }
 
     async getFormStatusByPhone(phoneNumber: string): Promise<FormStatus> {
-        const formStatus = await this.formStatusRepository.findOne({
+        let formStatus = await this.formStatusRepository.findOne({
             where: { phoneNumber },
-            relations: ['form', 'form.items'],
+            relations: ['form', 'form.items', 'form.status'],
         });
 
         if (!formStatus) {
-            throw new Error('Form not found for this phone number');
+            const form = await this.getOneForm();
+            formStatus = await this.startForm(phoneNumber, form.id.toString());
         }
 
         return formStatus;
@@ -90,6 +109,33 @@ export class UserFormsService {
         }
 
         return nextQuestion;
+    }
+
+    async getActualQuestionByPhone(phoneNumber: string): Promise<FormItem | null> {
+        const formStatus = await this.formStatusRepository.findOne({
+            where: { phoneNumber },
+            relations: ['form', 'form.items'],
+        });
+
+        if (!formStatus) {
+            throw new Error('Form not found for this phone number');
+        }
+
+        console.log("formStatus",formStatus);
+        console.log("formStatus.actualStep",formStatus.actualStep);
+        console.log("formStatus.form.items",formStatus.form.items);
+
+        if (formStatus.actualStep === 0) {
+            formStatus.actualStep = 1;
+        }
+
+        const actualQuestion = formStatus.form.items.find(item => item.step === formStatus.actualStep );
+
+        if (!actualQuestion) {
+            return null;
+        }
+
+        return actualQuestion;
     }
 
     async saveResponse(phoneNumber: string, formId: string, step: string, response: FormResponse): Promise<boolean> {

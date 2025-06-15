@@ -13,9 +13,14 @@ export class UserFormsController {
     return this.userFormsService.createForm(createFormDto);
   }
 
-  @Get('status/:phoneNumber')
-  async getFormStatus(@Param('phoneNumber') phoneNumber: string) {
-    return this.userFormsService.getFormStatusByPhone(phoneNumber);
+  @Get()
+  async getAllForms(): Promise<FormEntity[]> {
+    return this.userFormsService.getAllForms();
+  }
+
+  @Get('actual-question/:phoneNumber')
+  async getActualQuestion(@Param('phoneNumber') phoneNumber: string) {
+    return this.userFormsService.getActualQuestionByPhone(phoneNumber);
   }
 
   @Get('next-question/:phoneNumber')

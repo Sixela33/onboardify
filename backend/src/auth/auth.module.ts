@@ -26,14 +26,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
     JwtStrategy,
     RefreshJwtStrategy,
     GoogleStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard, //@UseGuards(JwtAuthGuard) applied on all API endppints
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
   ],
 })
 export class AuthModule {}
