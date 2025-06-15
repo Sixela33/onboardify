@@ -4,7 +4,7 @@ import WhatsApp from './pages/WhatsApp'
 import BulkMessage from './pages/BulkMessage'
 import GetAllForms from './pages/GetAllForms'
 import Home from './pages/Home'
-import Chat from './pages/Chat'
+import Chats from './pages/Chats'
 import FormStatuese from './pages/FormStatuese'
 import CreateForm from './pages/CreateForm'
 
@@ -18,7 +18,7 @@ function App() {
         <Route path="/create-form" element={<CreateForm />} />
         <Route path="/forms" element={<GetAllForms />} />
         <Route path="/form-status" element={<FormStatuese />} />
-        <Route path="/chat" element={<Chat />} />
+        <Route path="/chat" element={<Chats />} />
       </Routes>
   )
 }

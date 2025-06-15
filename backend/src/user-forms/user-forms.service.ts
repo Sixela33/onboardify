@@ -186,4 +186,37 @@ export class UserFormsService {
             relations: ['form', 'form.items', 'form.status'],
         });
     }
+
+    async getAllChats() {
+        const formStatuses = await this.formStatusRepository.find({
+            relations: ['form', 'form.items'],
+        });
+
+        const chats = await Promise.all(
+            formStatuses.map(async (status) => {
+                const responses = await this.formResponseRepository.find({
+                    where: { formId: status.form.id },
+                    order: { id: 'ASC' },
+                });
+
+                const formItems = status.form.items.sort((a, b) => a.step - b.step);
+                const conversation = formItems.map((item, index) => ({
+                    question: item.question,
+                    response: responses[index]?.response || null,
+                    step: item.step,
+                }));                
+
+                return {
+                    phoneNumber: status.phoneNumber,
+                    formId: status.form.id,
+                    formName: status.form.name,
+                    currentStep: status.actualStep,
+                    isComplete: status.actualStep > formItems.length,
+                    conversation
+                };
+            })
+        );
+
+        return chats;
+    }
 }

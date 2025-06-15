@@ -48,5 +48,12 @@ export class UserFormsController {
     return this.userFormsService.startForm(phoneNumber, formId);
   }
 
+  @Get('chats')
+  async getAllChats() {
+    return this.userFormsService.getAllChats()
+  }
+
+  
+
  
 }
