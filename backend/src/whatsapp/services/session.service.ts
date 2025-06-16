@@ -424,6 +424,9 @@ export class WhatsappService {
         const personalizedMessage = message.replace(/\{name\}/g, contact.name);
         
         await session.socket.sendMessage(contact.phone, { text: personalizedMessage });
+
+        await this.whitelistService.addToWhitelist(contact.phone, session.id);
+
         results.sentMessages++;
         
         this.logger.log(`Message sent to ${contact.name} (${contact.phone})`);

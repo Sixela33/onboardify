@@ -181,16 +181,49 @@ export default function Chats() {
                         {chat.isComplete ? 'Completado' : 'En Progreso'}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-400 truncate">
-                      {getLastMessage(chat)}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="p-6 text-center text-gray-500">
-                  <p className="text-sm">Aún no hay conversaciones.</p>
-                </div>
-              )}
+                  </CardHeader>
+                  <CardContent>
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="conversation">
+                        <AccordionTrigger>
+                          View Conversation
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-4 mt-2">
+                            {chat.conversation.map((item, index) => (
+                              <div key={index} className="space-y-2">
+                                <div className="p-3 rounded-lg">
+                                  <p className="font-medium">Question {item.step}:</p>
+                                  <p>{item.question}</p>
+                                </div>
+                                {item.response && (
+                                  <div className="p-3 rounded-lg ml-4">
+                                    <p className="font-medium">Response:</p>
+                                    <p>{item.response}</p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                    <div className="mt-4">
+                      <div className="w-full rounded-full h-2.5">
+                        <div
+                          className="h-2.5 rounded-full"
+                          style={{ 
+                            width: `${Math.round((chat.currentStep / chat.conversation.length) * 100)}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-sm mt-1">
+                        Step {chat.currentStep -1} of {chat.conversation.length}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </ScrollArea>

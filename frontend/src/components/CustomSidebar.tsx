@@ -1,5 +1,5 @@
 import { Sidebar, SidebarGroupContent, SidebarGroup, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from './ui/sidebar'
-import { Home, FileText, MessageSquare, MessagesSquare, PlusCircle, ListChecks } from 'lucide-react'
+import { Home, FileText, MessageSquare, ListChecks } from 'lucide-react'
 import LoginButton from './LoginButton'
 
 const items = [
@@ -28,6 +28,11 @@ const items = [
     url: "/whatsapp",
     icon: MessageSquare,
   },
+  {
+    title: "Bulk Message",
+    url: "/bulk-message",
+    icon: MessageSquare,
+  }
 ]
 
 export default function CustomSidebar() {

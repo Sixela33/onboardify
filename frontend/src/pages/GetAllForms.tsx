@@ -15,15 +15,12 @@ import {
   FileText, 
   Settings, 
   CheckCircle, 
-  XCircle,
   AlertCircle,
-  ChevronRight,
   GripVertical,
   Building2,
   Shield,
   Wallet,
   Users,
-  ArrowRight
 } from "lucide-react"
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/lib/axiosInstance'
@@ -118,7 +115,6 @@ const templates = [
 export default function Forms() {
   const [forms, setForms] = useState<Form[]>([])
   const [loading, setLoading] = useState(true)
-  const [showTemplates, setShowTemplates] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [newForm, setNewForm] = useState({
     name: '',
