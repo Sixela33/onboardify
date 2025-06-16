@@ -1,0 +1,873 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ typeof $json.body.message }}",
+                    "rightValue": "string",
+                    "id": "8f3d5af1-0f55-43bc-a9a2-50c4db14a082"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Supported"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "89971d8c-a386-4e77-8f6c-f491a8e84cb6",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "leftValue": "={{ typeof $json.body.message }}",
+                    "rightValue": "string"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Not Supported"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca3e3b81-3785-4f95-b401-dff679b422c0",
+      "name": "Handle Message Types",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -1620,
+        895
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        895
+      ],
+      "id": "c8d81d5d-f8b4-45ae-b18e-6551902971df",
+      "name": "Webhook",
+      "webhookId": "775963b1-8d2e-4fad-929c-8303ffa45625"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output ||  $json.res}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1012,
+        895
+      ],
+      "id": "ff9edd78-818d-4f17-8742-41c990870249",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"isValidResponse\": true\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -472,
+        1365
+      ],
+      "id": "3ff95a75-fa6a-4db1-a88c-f112a8e45294",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {
+          "prompt": "Instructions:\n--------------\n{instructions}\n--------------\nCompletion:\n--------------\n{completion}\n--------------\n\nAbove, the Completion did not satisfy the constraints given in the Instructions.\nError:\n--------------\n{error}\n--------------\n\nPlease try again. Please only respond with an answer that satisfies the constraints laid out in the Instructions:"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        1167.5
+      ],
+      "id": "e2f41862-12f4-4e6d-8072-374a6b4538d4",
+      "name": "Auto-fixing Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://localhost:3000/user-forms/respond/{{ $('Webhook').item.json.body.from }}/{{ $('Check form status').item.json.formId }}/{{ $('Check form status').item.json.step }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "formId",
+              "value": "={{ $('Check form status').item.json.formId }}"
+            },
+            {
+              "name": "response",
+              "value": "={{ $('Webhook').item.json.body.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -24,
+        945
+      ],
+      "id": "ae6539e3-fca2-4646-9728-aa5fe25f40b2",
+      "name": "Save Response"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "824e3e89-8596-4e59-947c-b006f4035d8e",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        724,
+        1740
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "bCoiULzt2sMNHLNb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "de86b9c2-c7de-44b9-97f0-7300889a08c7",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -740,
+        1165
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "bCoiULzt2sMNHLNb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "4cb7dbca-0801-4534-88c7-dde5f81e81a2",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        724,
+        965
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "bCoiULzt2sMNHLNb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "860566f4-e8b0-487a-8df4-e33253faa49d",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -592,
+        1365
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "bCoiULzt2sMNHLNb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:3000/user-forms/actual-question/{{ $json.body.from }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1400,
+        895
+      ],
+      "id": "12c2a9e7-943c-42c1-a781-2935bb3bae68",
+      "name": "Check form status"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=La informacion a extraer ahora es:\n{{ $json.question }}\n\nSu respuesta fue:\n{{ $('Webhook').item.json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Eres un agente de validación que ayuda a completar formularios por WhatsApp. Tu tarea es evaluar si la respuesta del usuario es válida según la pregunta que se le hizo.\n\nSi la respuesta cumple con lo que la pregunta solicita (por ejemplo, un número si se pide edad), responde true.\n\nSi es irrelevante o está incompleta, responde false\n\nLos nombres y apellidos aceptalos siempre salvo que obviamente no sean reales"
+        }
+      },
+      "id": "6c40d71a-3322-40ac-ae8d-a074ef19306b",
+      "name": "Validate input agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -724,
+        945
+      ],
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/user-forms/actual-question/5491140452151-1571922502@g.us",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        196,
+        945
+      ],
+      "id": "80e3f3e1-f550-4571-a659-e4367a9c3bea",
+      "name": "Get Next Question"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ahora la siguiente informacion a extraer es:\n\n(DEBES HACER ESTA PREGUNTA NO OTRA) \n\n{{ $json.question }}\n\nEl historial es:\n\n{{ $('Check form status').item.json.responses }}\n",
+        "options": {
+          "systemMessage": "Eres un agente conversacional que guía a usuarios por WhatsApp para completar formularios paso a paso.\nTu tarea es formular la siguiente pregunta del formulario teniendo en cuenta:\n\nLas preguntas anteriores ya respondidas.\n\nQue el lenguaje debe ser breve, amable y directo, adecuado para WhatsApp.\n\nSi ya se completó el formulario, agradece y finaliza con un cierre cordial.\nDevuelve solo la siguiente pregunta o el mensaje de cierre."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        636,
+        745
+      ],
+      "id": "f64c3935-8755-4c58-b904-cd82bc678150",
+      "name": "Formulate new Question"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=El historial es:\n{{ JSON.stringify($('Check form status').item.json.formItems) || \"\" }}\n\nLa pregunta a roformular es:\n\n{{ $('Check form status').item.json.question }}",
+        "options": {
+          "systemMessage": "Eres un asistente de WhatsApp que detectó que la última respuesta del usuario no fue válida para la pregunta realizada.\nTu objetivo es repreguntar de forma clara y específica, ayudando al usuario a entender qué tipo de respuesta se espera.\nIncluye pistas si es necesario (por ejemplo, “Por favor, escribe solo tu edad en números”).\nUsa un tono amigable y humano, sin sonar robótico.\n\nUTILIZA LA INFORMACION PERSONAL DEL USUARIO EN LOS PROMPTS"
+        }
+      },
+      "id": "de4db58f-d32c-4db4-bad2-fa018f51d47f",
+      "name": "Ask again",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        636,
+        1520
+      ],
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e6d3019e-a0e4-497c-b90a-1b973039eac5",
+              "leftValue": "={{ $json.new_form }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        570
+      ],
+      "id": "b33028f8-e0ca-4316-9159-a1c94b3a6ee9",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {res: \"¡Hola! 😊 Para empezar, ¿me decís tu nombre de pila?\"};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        714,
+        520
+      ],
+      "id": "985469cd-8c8b-4457-93f5-f38e1294bf7d",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1af0a8ea-dc59-4f2a-93e7-dcebd7daf299",
+              "leftValue": "={{ $('Webhook').item.json.body.message }}",
+              "rightValue": "media/other",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1180,
+        895
+      ],
+      "id": "27fcdfba-6a63-4a03-b2f5-0a2b2e728e49",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "sendTo": "info@gmail.com",
+        "subject": "Nuevo usuario",
+        "message": "[numero] ha comenzado el flow de omboarding",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1840,
+        260
+      ],
+      "id": "329134ed-0485-4606-adb1-19bf41867528",
+      "name": "Gmail",
+      "webhookId": "080cb2a9-d95a-4c1c-be27-2996f6a7cf9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P2oMS809ab9KxlbZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {res: \"¡Perfecto! Recibimos el estatuto en PDF y ya lo estamos procesando. 🧠📄 \\n Muchas gracias por trabajar con nosotros\"};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        714,
+        1220
+      ],
+      "id": "35c22ec8-e5b8-4f1c-8eef-c88dab8b71b2",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79235788-851c-4032-a371-96aa85b9587f",
+              "leftValue": "={{ $('Webhook').item.json.body.isDocument }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        1595
+      ],
+      "id": "1b3f9c2e-1d24-4113-9456-46b726fcde16",
+      "name": "If4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        1695
+      ],
+      "id": "df014644-dbd9-420e-9f9c-20972971d663",
+      "name": "Wait",
+      "webhookId": "ff9df339-ae81-4269-a573-83212017073b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://localhost:3000/user-forms/respond/{{ $('Webhook').item.json.body.from }}/{{ $('Check form status').item.json.formId }}/{{ $('Check form status').item.json.step }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "formId",
+              "value": "={{ $('Check form status').item.json.formId }}"
+            },
+            {
+              "name": "response",
+              "value": "=Saved"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1012,
+        1445
+      ],
+      "id": "30eca5a9-8aec-46f0-9327-22dc28964704",
+      "name": "Save Response1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "87cd0e48-f8e3-41a6-acaf-4ac9df2787b4",
+              "leftValue": "={{ $json.question }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        945
+      ],
+      "id": "8b81bf6e-6d7c-450f-a2be-69ba87c17380",
+      "name": "If no next question"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6b94c450-1448-4b02-a509-283c9d5b21ef",
+              "leftValue": "={{ $json.output.isValidResponse }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -244,
+        945
+      ],
+      "id": "85c9df61-4fb4-4727-b26c-96dcee3ec514",
+      "name": "If answers question"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Handle Message Types": {
+      "main": [
+        [
+          {
+            "node": "Check form status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Handle Message Types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Validate input agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Response": {
+      "main": [
+        [
+          {
+            "node": "Get Next Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Validate input agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Formulate new Question",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ask again",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check form status": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate input agent": {
+      "main": [
+        [
+          {
+            "node": "If answers question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Next Question": {
+      "main": [
+        [
+          {
+            "node": "If no next question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formulate new Question": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask again": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate input agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate input agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no next question": {
+      "main": [
+        [
+          {
+            "node": "Formulate new Question",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If answers question": {
+      "main": [
+        [
+          {
+            "node": "Save Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b9155f20-fe42-4f33-bf10-d6379db4b36b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48adbae0e2fe54abf0fa15e5edbd8ab603656e873914cd48de22729f20c3ddce"
+  },
+  "id": "CCG8heO3vx5uejRq",
+  "tags": []
+}

@@ -198,7 +198,7 @@ export class WhatsappService {
 
   // Handle incoming messages when the "messages.upsert" event is emitted
   private async handleIncomingMessages(session: WhatsAppSession, msg: WAMessage): Promise<void> {
-    console.log("msg", msg);
+    // console.log("msg", msg);
 
     // Evitar procesar mensajes sin remitente o mensajes de estado
     if (!msg.key.remoteJid || msg.key.remoteJid === 'status@broadcast') return;

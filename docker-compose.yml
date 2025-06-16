@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - omboardify-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      # Authentication
+      - ACCESS_JWT_SECRET=${ACCESS_JWT_SECRET}
+      - ACCESS_JWT_EXPIRE_IN=${ACCESS_JWT_EXPIRE_IN}
+      - REFRESH_JWT_SECRET=${REFRESH_JWT_SECRET}
+      - REFRESH_JWT_EXPIRE_IN=${REFRESH_JWT_EXPIRE_IN}
+      
+      # Database
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT}
+
+      # External Services
+      - N8N_WORKFLOW_URL=${N8N_WORKFLOW_URL}
+    depends_on:
+      - postgres
+      - n8n
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/auth:/app/auth
+    networks:
+      - omboardify-network
+
+  postgres:
+    image: postgres
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - omboardify-network
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    env_file:
+      - .env
+    networks:
+      - omboardify-network
+
+volumes:
+  postgres_data:
+
+networks:
+  omboardify-network:
+    driver: bridge

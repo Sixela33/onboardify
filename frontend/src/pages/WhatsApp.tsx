@@ -1,4 +1,4 @@
-                                  import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { SessionStatus } from '../lib/whatsappApi';
 import { useUser } from '../contexts/UserContext';
 import { Button } from '../components/ui/button';

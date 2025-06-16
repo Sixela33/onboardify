@@ -1,54 +1,98 @@
-# React + TypeScript + Vite
+# Omboardify Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend application for Omboardify, built with React and Vite, providing a modern and responsive interface for managing client onboarding processes.
 
-Currently, two official plugins are available:
+## 🛠️ Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** React with Vite
+- **Language:** TypeScript
+- **Styling:** TailwindCSS
+- **State Management:** React Query
+- **Router:** React Router v7
+- **UI Components:** Radix UI
+- **Package Manager:** pnpm
 
-## Expanding the ESLint configuration
+## 📁 Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+src/
+├── assets/            # Static assets
+├── components/        # Reusable UI components
+├── contexts/         # React contexts
+├── hooks/            # Custom React hooks
+├── lib/              # Utility libraries
+├── pages/            # Route components
+├── types/            # TypeScript definitions
+└── utils/            # Helper functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- Node.js (v18 or higher)
+- pnpm (v10 or higher)
+- Backend service running
+
+### Installation
+
+1. Install dependencies:
+```bash
+pnpm install
 ```
+
+2. Create `.env` file:
+
+### Development
+
+```bash
+# Start development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Preview production build
+pnpm run preview
+```
+
+## 📱 Features
+
+### Dashboard
+- Real-time onboarding metrics
+- Status tracking
+- KYC verification monitoring
+- Live onboarding progress
+
+### WhatsApp Integration
+- QR code scanning interface
+- Session management
+- Connection status monitoring
+- Bulk messaging interface
+
+### Form Management
+- Form creation interface
+- Response tracking
+- Progress monitoring
+- Chat conversations
+
+## 🔄 State Management
+
+Uses React Query for server state:
+
+```typescript
+// Example query
+const { data, isLoading } = useQuery({
+  queryKey: ['formStatus'],
+  queryFn: () => api.getForms()
+});
+```
+
+## 📊 Analytics Integration
+
+Real-time metrics tracking:
+- Total clients
+- Active onboardings
+- Completion rates
+- Average times
+- Conversion rates
