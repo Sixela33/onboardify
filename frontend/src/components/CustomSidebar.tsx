@@ -1,6 +1,8 @@
 import { Sidebar, SidebarGroupContent, SidebarGroup, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from './ui/sidebar'
 import { Home, FileText, MessageSquare, ListChecks } from 'lucide-react'
 import LoginButton from './LoginButton'
+import { useUser } from '../contexts/UserContext'
+import { useLocation } from 'react-router-dom'
 
 const items = [
   {
@@ -36,6 +38,14 @@ const items = [
 ]
 
 export default function CustomSidebar() {
+  const { user } = useUser();
+  const location = useLocation();
+
+  // Don't show sidebar on auth page or when user is not authenticated
+  if (!user || location.pathname === '/auth') {
+    return null;
+  }
+
   return (
     <Sidebar>
       <SidebarContent>

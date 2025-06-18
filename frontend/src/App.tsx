@@ -7,11 +7,15 @@ import Home from './pages/Home'
 import Chats from './pages/Chats'
 import FormStatuese from './pages/FormStatuese'
 import CreateForm from './pages/CreateForm'
+import Auth from './pages/Auth'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {  
   return (
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+    <Routes>
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route element={<ProtectedRoute/>}>
         <Route path="/home" element={<Home />} />
         <Route path="/whatsapp" element={<WhatsApp />} />
         <Route path="/bulk-message" element={<BulkMessage />} />
@@ -19,7 +23,8 @@ function App() {
         <Route path="/forms" element={<GetAllForms />} />
         <Route path="/form-status" element={<FormStatuese />} />
         <Route path="/chat" element={<Chats />} />
-      </Routes>
+      </Route>
+    </Routes>
   )
 }
 

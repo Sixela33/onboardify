@@ -37,7 +37,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - DB_HOST=postgres
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=${DB_PORT:-5432}
 
       # External Services
       - N8N_WORKFLOW_URL=${N8N_WORKFLOW_URL}
